@@ -1,0 +1,21 @@
+{
+    "name": "entityclass",
+    "version": "1.0.0",
+    "main": "build/app.ts",
+    "author": "wells.jiang",
+    "license": "MIT",
+    "dependencies": {
+        "@types/mssql": "^4.0.9",
+        "@types/mysql": "^2.15.5",
+        "@types/uuid": "^3.4.3",
+        "bootstrap": "3.3.7",
+        "electron": "^2.0.5",
+        "jquery": "^3.3.1",
+        "linq": "^3.1.0",
+        "linqts": "^1.12.0",
+        "log4js": "^3.0.4",
+        "mssql": "^4.1.0",
+        "mysql": "^2.16.0",
+        "uuid": "^3.3.2"
+    }
+}

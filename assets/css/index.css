@@ -1,0 +1,203 @@
+html,
+body {
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    color: #000000;
+    /* font-family: '微软雅黑'; */
+}
+
+.layui-header {
+    height: 40px;
+    z-index: 1000;
+    background-color: #FFFFFF !important;
+}
+
+.layui-layout-admin .layui-side {
+    top: 0px;
+    z-index: 1001;
+    width: 250px;
+    background-color: #ffffff !important;
+}
+
+.layui-side-scroll {
+    width: 270px;
+}
+
+.layui-layout-admin .layui-body {
+    top: 40px;
+    bottom: 0px;
+    background-color: #F2F2F2 !important;
+    left: 250px;
+}
+
+.layui-layout-left {
+    left: 250px;
+}
+
+.soft-logo {
+    height: 40px;
+    line-height: 40px;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    background-color: #1E9FFF;
+    position: fixed;
+    width: 250px;
+    word-break: keep-all;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+#demenu-tree {
+    margin-top: 40px;
+}
+
+.layui-nav .layui-nav-item {
+    line-height: 40px;
+}
+
+.menu-linkbtn>i {
+    font-size: 16px !important;
+    color: #000000;
+}
+
+ul.layui-nav.layui-layout-left>li {
+    margin: 0 10px;
+}
+
+ul.layui-nav.layui-layout-left>li:first-child {
+    margin-left: 0px;
+}
+
+.layui-nav .layui-nav-item a {
+    padding: 0px !important;
+}
+
+.layui-body {
+    overflow-y: scroll;
+}
+
+.fixed-table-container thead th .th-inner {
+    padding: 3px 10px;
+    overflow: hidden;
+    box-sizing: border-box;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    color: #666;
+    font-weight: 400;
+    white-space: nowrap;
+    font-size: 12px;
+}
+
+.fixed-table-container {
+    border-radius: 0px;
+    border-right: none;
+}
+
+.fixed-table-body>table {
+    border: none;
+}
+
+.fixed-table-body>table>thead>tr {
+    /* background-color: #F2F2F2; */
+    background-color: #FFFFFF;
+}
+
+.fixed-table-body>table>tbody>tr>td {
+    color: #666;
+    font-weight: 400;
+    font-size: 12px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    line-height: 1.4;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    cursor: default;
+    padding-left: 10px;
+    vertical-align: middle;
+}
+
+.fixed-table-body>table>tbody>tr>td i.layui-icon {
+    border: none;
+}
+
+.fixed-table-body>table>tbody>tr>td>a.editable {
+    height: 15px;
+    padding-top: 1px;
+}
+
+a.editable-click {
+    /* overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 90%;
+    display: block;
+    position: relative; */
+}
+
+.editable-click,
+a.editable-click,
+a.editable-click:hover {
+    border-bottom: none;
+}
+
+.popover-title {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 12px;
+}
+
+.editable-popup {
+    border-radius: 0px;
+}
+
+.popover-content {
+    padding: 5px;
+}
+
+.popover-content input,
+.popover-content textarea {
+    border-radius: 0px;
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 12px;
+    color: #666;
+}
+
+.popover-content textarea {
+    padding: 5px;
+}
+
+.popover-content button {
+    border-radius: 0px;
+}
+
+.editableform .editable-buttons {
+    vertical-align: bottom;
+}
+
+.editableform .editable-input textarea {
+    height: 60px;
+    width: 180px;
+}
+
+div,
+span,
+td,
+th {
+    -moz-user-select: none;
+    -o-user-select: none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.highlightbox,
+.highlightbox span,
+.highlightbox div {
+    -moz-user-select: auto;
+    -o-user-select: auto;
+    -khtml-user-select: auto;
+    -webkit-user-select: auto;
+    -ms-user-select: auto;
+    user-select: auto;
+}

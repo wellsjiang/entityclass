@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>数据库生成实体</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href="../assets/plugin/layui/css/layui.css" rel="stylesheet" type="text/css" />
+    <link href="../assets/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="../assets/plugin/bootstraptable/bootstrap-table.min.css" rel="stylesheet" type="text/css" />
+    <link href="../assets/plugin/bootstraptable/extensions/editable/bootstrap-editable.min.css" rel="stylesheet" type="text/css" />
+    <link href="../assets/plugin/fontawesome/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+    <link href="../assets/plugin/ztree/css/zTreeStyle/zTreeStyle.css" rel="stylesheet" type="text/css" />
+    <link href="../assets/css/index.css" rel="stylesheet" type="text/css" />
+    <link href="../assets/css/vs2015.css" rel="stylesheet" type="text/css" />
+    <script>
+        window.jQuery = window.$ = require("jquery")
+    </script>
+    <script src="../assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="../assets/plugin/bootstraptable/bootstrap-table.min.js"></script>
+    <script src="../assets/plugin/bootstraptable/locale/bootstrap-table-zh-CN.min.js"></script>
+    <script src="../assets/plugin/bootstraptable/extensions/editable/bootstrap-table-editable.js"></script>
+    <script src="../assets/plugin/bootstraptable/extensions/editable/bootstrap-editable.js"></script>
+    <script src="../assets/js/highlight.min.js"></script>
+    <script>
+        hljs.initHighlightingOnLoad();
+    </script>
+    <!-- <script src="../assets/plugin/jquery.resize.js"></script> -->
+</head>
+
+<body class="layui-layout-body">
+    <div class="layui-layout layui-layout-admin">
+        <div class="layui-header">
+            <ul class="layui-nav layui-layout-left">
+                <li class="layui-nav-item layadmin-flexible" lay-unselect="">
+                    <a class="menu-linkbtn" href="javascript:;" layadmin-event="flexible" title="侧边伸缩">
+                        <i class="layui-icon layui-icon-shrink-right" id="leftment-btn"></i>
+                    </a>
+                </li>
+                <li class="layui-nav-item layui-hide-xs" lay-unselect="">
+                    <a class="menu-linkbtn" href="javascript:;" target="_blank" title="添加数据库">
+                        <i class="layui-icon layui-icon-add-1" id="dbaddbtn"></i>
+                    </a>
+                </li>
+                <li class="layui-nav-item" lay-unselect="">
+                    <a class="menu-linkbtn" href="javascript:;" layadmin-event="refresh" title="刷新">
+                        <i class="layui-icon layui-icon-refresh-3"></i>
+                    </a>
+                </li>
+        </div>
+        <div class="layui-side layui-bg-black leftmenu-box" style="-webkit-transition: all .3s;transition: all .3s;">
+            <div class="layui-side-scroll">
+                <div class="soft-logo" style="-webkit-transition: all .3s;transition: all .3s;">实体生成工具&nbsp;&nbsp;&nbsp;&nbsp;</div>
+                <ul id="demenu-tree" class="ztree"></ul>
+            </div>
+        </div>
+
+        <div class="layui-body">
+            <!-- 内容主体区域 -->
+            <div style="margin: 15px;" id="tablebox">
+                <div class="layui-card">
+                    <div class="layui-card-body">
+                        <button class="layui-btn layui-btn-sm layui-btn-normal" id="prefixbtn">前缀</button>
+                        <button class="layui-btn layui-btn-sm layui-btn-normal" id="suffixbtn">后缀</button>
+                        <button class="layui-btn layui-btn-sm layui-btn-normal" id="camelcasebtn">驼峰命名</button>
+                        <button class="layui-btn layui-btn-sm layui-btn-normal" id="resetbtn">表格重置</button>
+                        <div class="dropdown" style="display: inline-block;margin-left: 10px;">
+                            <button class="btn btn-default dropdown-toggle btn-primary" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" style="padding: 7px 10px;border-radius: 2px;background-color: #1E9FFF;font-size: 12px;border: none;line-height: 1.4;">
+                              导出实体
+                              <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                <li><a href="javascript:void(0);" onclick="exportEntityClass(0)">C#实体</a></li>
+                                <!-- <li><a href="javascript:void(0);" onclick="exportEntityClass(1)">Typescript实体</a></li> -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <table id="table" data-toggle="table" data-pagination="false" data-classes="table table-bordered table-condensed" data-unique-id="Id" data-id-field="Id" style="display:none;background-color:#ffffff;">
+                    <thead>
+                        <tr>
+                            <th data-field="Field" data-align="left" data-editable="true" data-width="22%" data-editable="true">列名</th>
+                            <th data-field="IsPrimaryKey" data-align="center" data-formatter="ckeckboxFormat" data-width="10%">是否主键</th>
+                            <th data-field="IsNullable" data-align="center" data-formatter="ckeckboxFormat" data-width="10%">可为null</th>
+                            <th data-field="Type" data-align="center" data-width="10%">类型</th>
+                            <th data-field="DefaultValue" data-align="center" data-width="17%">默认值</th>
+                            <th data-field="Description" data-align="left" data-width="31%" data-editable="true" data-editable-type="textarea">描述</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src="../assets/plugin/layui/layui.all.js"></script>
+    <script src="../assets/plugin/ztree/js/jquery.ztree.all.min.js"></script>
+    <script>
+        const ipc = require('electron').ipcRenderer;
+        document.querySelector("#prefixbtn").addEventListener("click", function() {
+            let layerIndex = layer.open({
+                type: 1,
+                title: "追加或删除前缀",
+                area: ['300px', '165px'],
+                btn: ['追加', '删除', '关闭'],
+                content: `
+                        <form class="layui-form layui-form-pane" action="" style="padding: 20px 15px 15px 20px;">
+                            <div class="layui-form-item" style="margin-bottom:0px;height: 30px;">
+                                <label class="layui-form-label" style="width: 60px;font-size: 12px;height:30px;padding:4px 15px;margin-bottom:0px;">前缀</label>
+                                <div class="layui-input-block" style="margin-left: 60px;">
+                                    <input id="prefixinput" type="text" name="title" autocomplete="off" placeholder="请输入前缀" class="layui-input" style="font-size: 12px;height:30px;">
+                                </div>
+                            </div>
+                        </form>`,
+                yes: function(layindex, layero) {
+                    let value = $("#prefixinput").val().replace(" ", "");
+                    if (value.length == 0) {
+                        layer.msg("请输入需要追加或删除的前缀文字");
+                        return false;
+                    }
+                    let data = $("#table").bootstrapTable('getData');
+                    var newData = [];
+                    for (let index = 0; index < data.length; index++) {
+                        let param = data[index];
+                        param.Field = value + param.Field;
+                        newData.push(param);
+                    }
+                    $("#table").bootstrapTable('load', newData);
+                    layer.close(layerIndex);
+                },
+                btn2: function(layindex, layero) {
+                    let value = $("#prefixinput").val();
+                    if (value == "" || value.replace(" ", "").length == 0) {
+                        layer.msg("请输入需要追加或删除的前缀文字");
+                        return false;
+                    }
+                    let data = $("#table").bootstrapTable('getData');
+                    var newData = [];
+                    for (let index = 0; index < data.length; index++) {
+                        let param = data[index];
+                        if (param.Field.length > value.length) {
+                            var oldPre = param.Field.substr(0, value.length);
+                            if (oldPre == value) {
+                                param.Field = param.Field.substr(value.length);
+                            }
+                        }
+                        newData.push(param);
+                    }
+                    $("#table").bootstrapTable('load', newData);
+                },
+                btn3: function(index, layero) {
+                    layer.close(layerIndex);
+                }
+            });
+        });
+        document.querySelector("#suffixbtn").addEventListener("click", function() {
+            let layerIndex = layer.open({
+                type: 1,
+                title: "追加或删除后缀",
+                area: ['300px', '165px'],
+                btn: ['追加', '删除', '关闭'],
+                content: `
+                        <form class="layui-form layui-form-pane" action="" style="padding: 20px 15px 15px 20px;">
+                            <div class="layui-form-item" style="margin-bottom:0px;height: 30px;">
+                                <label class="layui-form-label" style="width: 60px;font-size: 12px;height:30px;padding:4px 15px;margin-bottom:0px;">后缀</label>
+                                <div class="layui-input-block" style="margin-left: 60px;">
+                                    <input id="suffixinput" type="text" name="title" autocomplete="off" placeholder="请输入后缀" class="layui-input" style="font-size: 12px;height:30px;">
+                                </div>
+                            </div>
+                        </form>`,
+                yes: function(layindex, layero) {
+                    let value = $("#suffixinput").val().replace(" ", "");
+                    if (value.length == 0) {
+                        layer.msg("请输入需要追加或删除的后缀文字");
+                        return false;
+                    }
+                    let data = $("#table").bootstrapTable('getData');
+                    var newData = [];
+                    for (let index = 0; index < data.length; index++) {
+                        let param = data[index];
+                        param.Field = param.Field + value;
+                        newData.push(param);
+                    }
+                    $("#table").bootstrapTable('load', newData);
+                    layer.close(layerIndex);
+                },
+                btn2: function(layindex, layero) {
+                    let value = $("#suffixinput").val();
+                    if (value == "" || value.replace(" ", "").length == 0) {
+                        layer.msg("请输入需要追加或删除的后缀文字");
+                        return false;
+                    }
+                    let data = $("#table").bootstrapTable('getData');
+                    var newData = [];
+                    for (let index = 0; index < data.length; index++) {
+                        let param = data[index];
+                        if (param.Field.length > value.length) {
+                            var oldSuf = param.Field.substr(param.Field.length - value.length);
+                            if (oldSuf == value) {
+                                param.Field = param.Field.substr(0, param.Field.length - value.length);
+                            }
+                        }
+                        newData.push(param);
+                    }
+                    $("#table").bootstrapTable('load', newData);
+                },
+                btn3: function(index, layero) {
+                    layer.close(layerIndex);
+                }
+            });
+        });
+        document.querySelector("#camelcasebtn").addEventListener("click", function() {
+            let data = $("#table").bootstrapTable('getData');
+            for (let index = 0; index < data.length; index++) {
+                let param = data[index];
+                var strArray = param.Field.split("_");
+                if (strArray.length > 1) {
+                    for (let mark = 0; mark < strArray.length; mark++) {
+                        if (strArray[mark].length > 1) {
+                            strArray[mark] = strArray[mark].substring(0, 1).toUpperCase() + strArray[mark].substring(1);
+                        }
+                    }
+                    param.Field = strArray.join("");
+                } else {
+                    param.Field = param.Field.substring(0, 1).toUpperCase() + param.Field.substring(1);
+                }
+            }
+            $("#table").bootstrapTable('load', data);
+        });
+        document.querySelector("#resetbtn").addEventListener("click", function() {
+            if (window.tableData) {
+                $('#table').bootstrapTable("load", window.tableData);
+            }
+        });
+        document.querySelector("#dbaddbtn").addEventListener("click", function() {
+            let layerIndex = layer.open({
+                type: 1,
+                title: "添加数据库连接",
+                area: ['420px', '240px'],
+                btn: ['提交', '取消'],
+                yes: function(index, layero) {
+                    layer.msg("提交");
+                },
+                btn2: function(index, layero) {
+                    layer.msg("取消");
+                    layer.close(layerIndex);
+                }
+            });
+        });
+        document.querySelector("#leftment-btn").addEventListener("click", function(event) {
+            if ($(this).hasClass("layui-icon-shrink-right")) {
+                $(this).removeClass("layui-icon-shrink-right");
+                $(this).addClass("layui-icon-spread-left");
+                $(".leftmenu-box").width(0);
+                $(".soft-logo").width(0);
+                $(".layui-layout-left").css({
+                    left: "0px"
+                });
+                $(".layui-body").css({
+                    left: "0px"
+                });
+
+            } else {
+                $(this).removeClass("layui-icon-spread-left");
+                $(this).addClass("layui-icon-shrink-right");
+                $(".soft-logo").width(250);
+                $(".leftmenu-box").width(250);
+                $(".layui-layout-left").css({
+                    left: "250px"
+                });
+                $(".layui-body").css({
+                    left: "250px"
+                });
+            }
+        });
+        ipc.on('searchentity-reply', function(event, data) {
+            $("#table").show();
+            window.tableData = JSON.parse(data);
+            $('#table').bootstrapTable("load", JSON.parse(data));
+        });
+        ipc.on('requestMenu-reply', function(event, data) {
+            let menuArray = JSON.parse(data);
+            var setting = {
+                data: {
+                    key: {
+                        name: "Name",
+                        children: "Child",
+                        isParent: "IsParent"
+                    }
+                },
+                callback: {
+                    onDblClick: onMenuTreeDblClick
+                }
+            };
+            zTreeObj = $.fn.zTree.init($("#demenu-tree"), setting, menuArray);
+        });
+        ipc.send('requestMenu-message', "name");
+
+        function onMenuTreeDblClick(event, treeId, treeNode) {
+            if (treeNode != null && (treeNode.Type == 4 || treeNode.Type == 5)) {
+                window.dbConfig = treeNode;
+                ipc.send('searchentity-send', treeNode);
+            }
+        }
+
+        function exportEntityClass(type) {
+            ipc.send('exportentityclass-send', {
+                type: type,
+                dbConfig: window.dbConfig,
+                data: $("#table").bootstrapTable('getData')
+            });
+        }
+        ipc.on("exportentityclass-reply", function(event, data) {
+            debugger;
+            var content = hljs.highlight("csharp", data, true).value
+            layer.open({
+                type: 1,
+                title: 'C#实体',
+                closeBtn: 1, //不显示关闭按钮
+                anim: 2,
+                shade: 0,
+                area: ['900px', '800px'],
+                content: `<pre style="border:none;background-color: #fff;"><code style="border:none;" class="highlightbox">${content}</code></pre>`
+            });
+        });
+    </script>
+    <script>
+        function ckeckboxFormat(value, row, index) {
+            if (value == 1) {
+                return '<div class="layui-table-cell laytable-cell-' + index + '-ckeckboxFormat" style="line-height:16px;height:16px;"><div class="layui-unselect layui-form-checkbox layui-form-checked layui-checkbox-disbaled layui-disabled" lay-skin="primary"><i class="layui-icon layui-icon-ok"></i></div></div>'
+            }
+            return "";
+        }
+    </script>
+</body>
+
+</html>
